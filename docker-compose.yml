@@ -1,0 +1,24 @@
+#
+services:
+  dash_ml:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      MERCADO_LIVRE_APP_ID: ${MERCADO_LIVRE_APP_ID}
+      MERCADO_LIVRE_SECRET_KEY: ${MERCADO_LIVRE_SECRET_KEY}
+      MONGODB_URI: ${MONGODB_URI}
+    volumes:
+      - .:/app
+    command: sh -c "npm run dev"
+
+  localtunnel:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install -g localtunnel && lt --port 3000 --subdomain dashml-968354589"
+    restart: always
