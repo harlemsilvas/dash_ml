@@ -1,5 +1,22 @@
 {
   "version": 2,
-  "cleanUrls": true,
-  "trailingSlash": false
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "CLIENT_ID": "4172885144042906",
+    "CLIENT_SECRET": "IsPtzK9mek8hjBasSviz6NyjijkYPSlU",
+    "MONGODB_URI": "mongodb+srv://harlemclaumann:Harlem010101@cluster0.69j3tzl.mongodb.net/ml-auth?retryWrites=true&w=majority",
+    "MERCADO_LIVRE_APP_ID": "4172885144042906",
+    "MERCADO_LIVRE_SECRET_KEY": "IsPtzK9mek8hjBasSviz6NyjijkYPSlU"
+  }
 }
