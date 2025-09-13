@@ -45,7 +45,16 @@ Desktop.ini
 *.bak
 *.old
 *.orig
+# Docker
+Dockerfile
+docker-compose.yml
 *.sh
 *copy*
 
 nao-usado/
+
+# VSCode
+.vscode/
+
+# MacOS
+.DS_Store
