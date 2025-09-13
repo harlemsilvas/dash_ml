@@ -1,3 +1,4 @@
+//  orders/index.js
 import { fetchSellerOrders } from "@/services/order-service";
 
 export default async function handler(req, res) {

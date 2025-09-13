@@ -83,15 +83,14 @@ async function main() {
 
     // Salva ou atualiza no MongoDB
     await Token.findOneAndUpdate(
-      { user_id },
+      { user_id: data.user_id }, // filtro
       {
-        access_token,
-        refresh_token,
-        expires_in,
-        nickname,
-        updated_at: new Date(),
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        expires_in: data.expires_in,
+        nickname: data.nickname,
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true } // se não existir, cria
     );
 
     console.log("✅ Token salvo/atualizado no MongoDB com sucesso!");
