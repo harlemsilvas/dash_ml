@@ -1,6 +1,7 @@
 // pages/selecionar-vendedor.js
 import { useEffect, useState } from "react";
-import Layout from "@/components/Layout";
+import Layout from "@/components/layout/Layout";
+import Button from "@/components/ui/Button";
 
 export default function SelecionarVendedor() {
   const [sellers, setSellers] = useState([]);
@@ -17,34 +18,39 @@ export default function SelecionarVendedor() {
 
   return (
     <Layout>
-      <h1>👥 Vendedores Conectados</h1>
+      <h1 className="text-xl font-bold mb-4">👥 Vendedores Conectados</h1>
+
       {loading ? (
         <p>Carregando...</p>
       ) : sellers.length === 0 ? (
         <p>Nenhum vendedor conectado.</p>
       ) : (
-        <ul>
+        <ul className="space-y-2">
           {sellers.map((seller) => (
-            <li key={seller.user_id}>
-              Vendedor ID: {seller.user_id} - Conectado em{" "}
-              {new Date(seller.created_at).toLocaleDateString()}
+            <li
+              key={seller.user_id}
+              className="p-2 border rounded bg-gray-50 shadow-sm"
+            >
+              <span className="font-medium">Vendedor ID:</span> {seller.user_id}{" "}
+              <br />
+              <span className="text-sm text-gray-600">
+                Conectado em{" "}
+                {new Date(seller.created_at).toLocaleDateString("pt-BR")}
+              </span>
             </li>
           ))}
         </ul>
       )}
-      <br />
-      <a
-        href="/api/auth/login"
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#0070ba",
-          color: "white",
-          textDecoration: "none",
-          borderRadius: "4px",
-        }}
-      >
-        ➕ Conectar Novo Vendedor
-      </a>
+
+      <div className="mt-6">
+        <Button
+          as="a"
+          href="/api/auth/login"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+        >
+          ➕ Conectar Novo Vendedor
+        </Button>
+      </div>
     </Layout>
   );
 }
