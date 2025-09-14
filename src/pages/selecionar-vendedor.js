@@ -1,64 +1,59 @@
-// pages/selecionar-vendedor.js
+// src/pages/selecionar-vendedor.js
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
-import Button from "@/components/ui/Button";
+import SellerCard from "@/components/layout/SellerCard";
 
 export default function SelecionarVendedor() {
   const [sellers, setSellers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("/api/auth/sellers")
-      .then((r) => r.json())
-      .then((data) => {
-        if (!Array.isArray(data)) {
-          setError("Erro ao carregar vendedores");
-          setSellers([]);
-        } else {
-          setSellers(data);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Erro ao carregar vendedores");
-        setSellers([]);
-      })
-      .finally(() => setLoading(false));
+    const fetchSellers = async () => {
+      try {
+        const res = await fetch("/api/auth/sellers");
+        const data = await res.json();
+        setSellers(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Erro ao carregar vendedores:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSellers();
   }, []);
 
   return (
-    <Layout>
-      <h1>👥 Vendedores Conectados</h1>
-      {loading ? (
-        <p>Carregando...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : sellers.length === 0 ? (
-        <p>Nenhum vendedor conectado.</p>
-      ) : (
-        <ul>
-          {sellers.map((seller) => (
-            <li key={seller.user_id}>
-              Vendedor ID: {seller.user_id} - Conectado em{" "}
-              {new Date(seller.created_at).toLocaleDateString()}
-            </li>
-          ))}
-        </ul>
-      )}
-      <br />
-      <a
-        href="/api/auth/login"
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#0070ba",
-          color: "white",
-          textDecoration: "none",
-          borderRadius: "4px",
-        }}
-      >
-        ➕ Conectar Novo Vendedor
-      </a>
+    <Layout activePage="sellers">
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-4">👥 Vendedores Conectados</h1>
+
+        {loading ? (
+          <p>Carregando vendedores...</p>
+        ) : sellers.length === 0 ? (
+          <p>Nenhum vendedor conectado.</p>
+        ) : (
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {sellers.map((seller) => (
+              <SellerCard
+                key={seller.user_id}
+                userId={seller.user_id}
+                nickname={seller.nickname || `Seller ${seller.user_id}`}
+                createdAt={seller.created_at}
+              />
+            ))}
+          </ul>
+        )}
+
+        <div className="mt-6">
+          <a
+            href="/api/auth/login"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            ➕ Conectar Novo Vendedor
+          </a>
+        </div>
+      </div>
     </Layout>
   );
 }

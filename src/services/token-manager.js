@@ -1,5 +1,6 @@
 import dbConnect from "../lib/mongodb";
 import Token from "../models/Token";
+import { getUserInfo } from "@/services/user-service";
 
 /**
  * Salva um token a partir do código OAuth
@@ -128,16 +129,57 @@ export async function refreshAccessToken(userId) {
   return renewedToken;
 }
 
+// export async function getAllSellers() {
+//   try {
+//     // Busca todos os tokens salvos
+//     const tokens = await Token.find(
+//       {},
+//       { user_id: 1, created_at: 1, _id: 0 }
+//     ).lean();
+//     return tokens; // [{ user_id: 12345, created_at: ... }, ...]
+//   } catch (err) {
+//     console.error("Erro ao buscar vendedores no DB:", err);
+//     return [];
+//   }
+// }
+/**
+ * Retorna todos os sellers conectados.
+ * Cada seller terá: user_id, created_at, nickname (se disponível)
+ */
 export async function getAllSellers() {
   try {
-    // Busca todos os tokens salvos
     const tokens = await Token.find(
       {},
-      { user_id: 1, created_at: 1, _id: 0 }
+      { user_id: 1, created_at: 1, nickname: 1, _id: 0 }
     ).lean();
-    return tokens; // [{ user_id: 12345, created_at: ... }, ...]
+
+    const sellers = await Promise.all(
+      tokens.map(async (t) => {
+        let nickname = t.nickname;
+
+        // Se não tiver nickname salvo, busca no ML
+        if (!nickname) {
+          try {
+            const userInfo = await getUserInfo(t.user_id);
+            nickname = userInfo.nickname;
+            // Atualiza no Mongo
+            await Token.updateOne({ user_id: t.user_id }, { nickname });
+          } catch {
+            nickname = `Seller ${t.user_id}`;
+          }
+        }
+
+        return {
+          user_id: t.user_id,
+          created_at: t.created_at,
+          nickname,
+        };
+      })
+    );
+
+    return sellers;
   } catch (err) {
-    console.error("Erro ao buscar vendedores no DB:", err);
+    console.error("Erro ao buscar sellers:", err);
     return [];
   }
 }

@@ -10,11 +10,11 @@ export default function AdminSellers() {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const response = await fetch("/api/auth/sellers");
-        const data = await response.json();
-        setSellers(data);
-      } catch (error) {
-        console.error("Erro ao carregar vendedores:", error);
+        const res = await fetch("/api/auth/sellers");
+        const data = await res.json();
+        setSellers(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Erro ao carregar vendedores:", err);
       } finally {
         setLoading(false);
       }
@@ -24,18 +24,23 @@ export default function AdminSellers() {
   }, []);
 
   return (
-    <Layout>
+    <Layout activePage="admin-sellers">
       <div className="p-8">
         <h1 className="text-2xl font-bold mb-4">👥 Vendedores Conectados</h1>
 
         {loading ? (
-          <p>Carregando...</p>
+          <p>Carregando vendedores...</p>
         ) : sellers.length === 0 ? (
           <p>Nenhum vendedor conectado.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {sellers.map((seller) => (
-              <SellerCard key={seller.user_id} seller={seller} />
+              <SellerCard
+                key={seller.user_id}
+                userId={seller.user_id}
+                nickname={seller.nickname || `Seller ${seller.user_id}`}
+                createdAt={seller.created_at}
+              />
             ))}
           </ul>
         )}
