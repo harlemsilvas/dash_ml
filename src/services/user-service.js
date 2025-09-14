@@ -1,3 +1,4 @@
+// src/services/user-service.js
 import { getValidToken } from "./token-manager";
 
 /**
@@ -17,3 +18,8 @@ export async function getSellerInfo(userId) {
 
   return await response.json();
 }
+
+/**
+ * Alias para manter compatibilidade com callback antigo
+ */
+export const getUserInfo = getSellerInfo;
