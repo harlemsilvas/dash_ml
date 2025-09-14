@@ -6,51 +6,59 @@ import Button from "@/components/ui/Button";
 export default function SelecionarVendedor() {
   const [sellers, setSellers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetch("/api/auth/sellers")
       .then((r) => r.json())
       .then((data) => {
-        setSellers(data);
-        setLoading(false);
-      });
+        if (!Array.isArray(data)) {
+          setError("Erro ao carregar vendedores");
+          setSellers([]);
+        } else {
+          setSellers(data);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Erro ao carregar vendedores");
+        setSellers([]);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return (
     <Layout>
-      <h1 className="text-xl font-bold mb-4">👥 Vendedores Conectados</h1>
-
+      <h1>👥 Vendedores Conectados</h1>
       {loading ? (
         <p>Carregando...</p>
+      ) : error ? (
+        <p>{error}</p>
       ) : sellers.length === 0 ? (
         <p>Nenhum vendedor conectado.</p>
       ) : (
-        <ul className="space-y-2">
+        <ul>
           {sellers.map((seller) => (
-            <li
-              key={seller.user_id}
-              className="p-2 border rounded bg-gray-50 shadow-sm"
-            >
-              <span className="font-medium">Vendedor ID:</span> {seller.user_id}{" "}
-              <br />
-              <span className="text-sm text-gray-600">
-                Conectado em{" "}
-                {new Date(seller.created_at).toLocaleDateString("pt-BR")}
-              </span>
+            <li key={seller.user_id}>
+              Vendedor ID: {seller.user_id} - Conectado em{" "}
+              {new Date(seller.created_at).toLocaleDateString()}
             </li>
           ))}
         </ul>
       )}
-
-      <div className="mt-6">
-        <Button
-          as="a"
-          href="/api/auth/login"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        >
-          ➕ Conectar Novo Vendedor
-        </Button>
-      </div>
+      <br />
+      <a
+        href="/api/auth/login"
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#0070ba",
+          color: "white",
+          textDecoration: "none",
+          borderRadius: "4px",
+        }}
+      >
+        ➕ Conectar Novo Vendedor
+      </a>
     </Layout>
   );
 }

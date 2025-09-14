@@ -127,3 +127,17 @@ export async function refreshAccessToken(userId) {
   console.log("[TokenManager] Token renovado para user_id:", data.user_id);
   return renewedToken;
 }
+
+export async function getAllSellers() {
+  try {
+    // Busca todos os tokens salvos
+    const tokens = await Token.find(
+      {},
+      { user_id: 1, created_at: 1, _id: 0 }
+    ).lean();
+    return tokens; // [{ user_id: 12345, created_at: ... }, ...]
+  } catch (err) {
+    console.error("Erro ao buscar vendedores no DB:", err);
+    return [];
+  }
+}
